@@ -1,0 +1,5 @@
+{
+    "robloxLsp.intelliSense.searchDepth": 4,
+    "robloxLsp.diagnostics.disable": [
+    ]
+}

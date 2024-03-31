@@ -1,0 +1,16 @@
+{
+    "name": "Animax",
+    "tree": {
+      "$className": "DataModel",
+      "ReplicatedStorage": {
+        "Animax": {
+          "$path": "../src"
+        }
+      },
+      "ServerScriptService": {
+        "AnimaxTestServer": {
+          "$path": "dev"
+        }
+      }
+    }
+  }
