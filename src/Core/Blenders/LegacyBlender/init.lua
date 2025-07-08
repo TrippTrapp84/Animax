@@ -1,52 +1,29 @@
---!strict
 local Handler = {}
 Handler.__index = Handler
 
-local AnimationTrack = require(script.Parent.Parent.AnimationTrack)
-local BlendEnums = require(script.Parent.BlendEnums)
-local EventTypes = require(script.Parent.Parent.Util.Event)
-
-type ANMXAnimationTrack = AnimationTrack.ANMXAnimationTrack
-type RigTimelineData = AnimationTrack.RigTimelineData
-type BlendOrientationType = BlendEnums.BlendOrientationType
-type ANMXScriptSignal = EventTypes.ANMXScriptSignal
-type ANMXScriptConnection = EventTypes.ANMXScriptConnection
-
-export type AnimationBlendData = {
-	Animation : ANMXAnimationTrack,
-	BlendOrientationType : BlendOrientationType,
-    PreviousRotationCFrame : {[Bone] : CFrame},
-    PreviousRotationOffset : {[Bone] : Vector3},
-    AnimationStoppedConnection : ANMXScriptConnection
-}
-
-export type ANMXLegacyAnimationBlender = typeof(setmetatable({},Handler)) & typeof(Handler) & {
-    Animations : {[ANMXAnimationTrack] : AnimationBlendData}
-}
-
 function Handler.new()
-    local self : ANMXLegacyAnimationBlender = setmetatable({},Handler) :: ANMXLegacyAnimationBlender
+    local self = setmetatable({},Handler)
 
     self.Animations = {}
 
     return self
 end
 
-function Handler.AddAnimation(self : ANMXLegacyAnimationBlender,Animation : ANMXAnimationTrack,BlendOrientationType : BlendOrientationType?)
+function Handler:AddAnimation(Animation,BlendOrientationType)
     local AnimStopCon = Animation.OnStop:Connect(function()
         self.Animations[Animation].AnimationStoppedConnection:Disconnect()
     end)
 
     local PreviousRotationCFrame = {}
     local PreviousRotationOffset = {}
-    for Bone : Bone,BoneTimelineData : RigTimelineData in pairs(Animation:GetRigTimeline()) do
+    for Bone : Bone,BoneTimelineData in pairs(Animation:GetRigTimeline()) do
         PreviousRotationCFrame[Bone] = BoneTimelineData.Poses[1].Pose.CFrame
         PreviousRotationOffset[Bone] = Vector3.new(0,0,0)
     end
     
     self.Animations[Animation] = {
         Animation = Animation,
-        BlendOrientationType = (BlendOrientationType or "ShortestDirection") :: BlendOrientationType,
+        BlendOrientationType = (BlendOrientationType or "ShortestDirection"),
         PreviousRotationCFrame = PreviousRotationCFrame,
         PreviousRotationOffset = PreviousRotationOffset,
         AnimationStoppedConnection = AnimStopCon
@@ -54,35 +31,35 @@ function Handler.AddAnimation(self : ANMXLegacyAnimationBlender,Animation : ANMX
     
 end
 
-function Handler.RemoveAnimation(self : ANMXLegacyAnimationBlender, Animation : ANMXAnimationTrack)
+function Handler:RemoveAnimation(Animation)
     self.Animations[Animation] = nil
 end
 
-function Handler._GetTotalWeights(self : ANMXLegacyAnimationBlender)
+function Handler:_GetTotalWeights()
     local Total = 0
-    for Animation : ANMXAnimationTrack in pairs(self.Animations) do
+    for Animation in pairs(self.Animations) do
         Total += Animation:GetWeight()
     end
 
     return Total
 end
 
-function Handler._GetTotalWeightsForBone(self : ANMXLegacyAnimationBlender, Bone : Bone)
+function Handler:_GetTotalWeightsForBone(Bone : Bone)
     local Total = 0
-    for Animation : ANMXAnimationTrack in pairs(self.Animations) do
+    for Animation in pairs(self.Animations) do
         Total += Animation:GetBoneWeight(Bone) * Animation:GetWeight()
     end
 
     return Total
 end
 
-function Handler._StepAnimations(self : ANMXLegacyAnimationBlender, DeltaTime : number)
-    for _,BlendData : AnimationBlendData in pairs(self.Animations) do
+function Handler:_StepAnimations(DeltaTime : number)
+    for _,BlendData in pairs(self.Animations) do
         BlendData.Animation:StepAnimation(DeltaTime)
     end
 end
 
-function Handler.RenderAnimations(self : ANMXLegacyAnimationBlender,DeltaTime : number)
+function Handler:RenderAnimations(DeltaTime : number)
     self:_StepAnimations(DeltaTime)
     if self:_GetTotalWeights() == 0 then return {} end
 
@@ -91,7 +68,7 @@ function Handler.RenderAnimations(self : ANMXLegacyAnimationBlender,DeltaTime : 
     local PoseData : {[Bone] : PoseDataTemp} = {}
 
     local IndexId = 1
-    for Animation : ANMXAnimationTrack,AnimData : AnimationBlendData in pairs(self.Animations) do
+    for Animation ,AnimData in pairs(self.Animations) do
         for Bone : Bone, BoneCFrame : CFrame in pairs(Animation:GetAnimationPoses()) do
             PoseData[Bone] = PoseData[Bone] or {
                 Rotation = {},

@@ -1,4 +1,3 @@
-local BlendTypes = require(script.BlendEnums)
 local LegacyBlender = require(script.LegacyBlender)
 
 local Handler = {}

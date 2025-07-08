@@ -1,5 +1,5 @@
 ---!strict
-local DefaultAnimator = require(script.Animators.DefaultAnimator)
+local DefaultAnimator = require(script.Core.Animators.DefaultAnimator)
 
 local Handler = {}
 

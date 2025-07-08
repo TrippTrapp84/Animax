@@ -12,7 +12,7 @@ export type ANMXScriptSignal = EventTypes.ANMXScriptSignal
 export type ANMXScriptConnection = EventTypes.ANMXScriptConnection
 
 function Handler.new() : ANMXScriptSignal
-    local self : ANMXScriptSignal = setmetatable({},Handler) :: ANMXScriptSignal
+    local self : ANMXScriptSignal = (setmetatable({},Handler) :: never) :: ANMXScriptSignal
 
     self.Callbacks = {}
 
@@ -42,9 +42,9 @@ function Handler.Connect(self : ANMXScriptSignal, Callback : ANMXScriptSignalCal
     return Connection.new(self,Index)
 end
 
-function Handler.Fire(self : ANMXScriptSignal, ... : any)
+function Handler.Fire(self : ANMXScriptSignal, ...: any)
     for i,v in pairs(self.Callbacks) do
-        v(...)
+        task.spawn(v,...)
     end
 end
 

@@ -1,49 +1,26 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local ANMXAnimator = require(ReplicatedStorage.Animax)
+local Animax = require(ReplicatedStorage.Animax)
 
-local RigRoot = workspace.Run.HumanoidRootPart
-local Animator = ANMXAnimator.MakeDefaultAnimator(RigRoot,"ShortestDirection")
-
-local Animation = Animator:LoadAnimation("rbxassetid://12638608080")
-
--- local function CompareBone(Bone : Bone, Pose : Pose, Timeline : any)
---     if Timeline[Bone].Poses[1].Pose.CFrame ~= Pose.CFrame then
---         error("Failed")
---     end
-
---     for i,v in pairs(Pose:GetSubPoses()) do
---         CompareBone(Bone:FindFirstChild(v.Name),v,Timeline)
---     end
+-- do --// Normal animation track test
+--     local RigRoot = workspace.Run.HumanoidRootPart
+--     local Animator = Animax.MakeDefaultAnimator(RigRoot,"ShortestDirection")
+    
+--     local Animation = Animator:LoadAnimation("rbxassetid://12638608080")
+--     Animation:AdjustSpeed(0.1)
+--     Animation:SetLooped(true)
+--     Animation:Play()
 -- end
 
--- for i,v in (Animation.Keyframes[1]:GetPoses()[1]:GetSubPoses()) do
---     CompareBone(RigRoot:FindFirstChild(v.Name),v,Animation:GetRigTimeline())
--- end
+do --// Kinematic Track Test
+    local RigRoot = workspace.IK.HumanoidRootPart
+    local Animator = Animax.MakeDefaultAnimator(RigRoot, "ShortestDirection")
 
-Animation:AdjustSpeed(0.1)
-Animation:SetLooped(true)
+    local KinematicAnim = Animator:LoadKinematicAnimation("rbxassetid://111809770929663")
+    KinematicAnim:SetLooped(true)
+    KinematicAnim:Play()
 
-Animation:Play()
-
--- Animation.OnStop:Connect(function()
---    Animation:Play()
--- end)
-
--- task.defer(function()
---     while wait() do
---         Animation:AdjustWeight(math.sin(time()))
---     end
--- end)
-
-local SecondAnim = Animator:LoadAnimation("rbxassetid://12663616469")
-
-SecondAnim:AdjustSpeed(0.5)
-SecondAnim:AdjustWeight(1000)
-SecondAnim:SetLooped(true)
-
-SecondAnim:Play()
-
--- SecondAnim.OnStop:Connect(function()
---     SecondAnim:Play()
--- end)
+    local WaveAnim = Animator:LoadAnimation("rbxassetid://85302302848438")
+    WaveAnim:SetLooped(true)
+    WaveAnim:Play()
+end

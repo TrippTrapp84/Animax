@@ -9,7 +9,7 @@ local Handler = {}
 Handler.__index = Handler
 
 function Handler.new(Signal : ANMXScriptSignal,ConnectionId : {}) : ANMXScriptConnection
-    local self : ANMXScriptConnection = setmetatable({},Handler) :: ANMXScriptConnection
+    local self : ANMXScriptConnection = (setmetatable({},Handler) :: never) :: ANMXScriptConnection
 
     self.Signal = Signal
     self.ConnectionId = ConnectionId
